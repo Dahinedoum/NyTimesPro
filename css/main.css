@@ -300,3 +300,37 @@ body {
     display: none;
   }
 
+  button.logout{
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin-right: 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+    background-color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  button.logout:hover {
+    color: #508d93;
+    border-bottom-color: #508d93;
+  }
+
+  .fav {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin-right: 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+    background-color: #801b1b;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }

@@ -47,8 +47,8 @@ const getNyList = () => {
     return res ? JSON.parse(res) : []
 }
 
-const setNyList =  (booksList) => {
-     window.localStorage.setItem(NY_BOOKS_LIST_KEY, JSON.stringify(booksList));
+const setNyList = (booksList) => {
+    window.localStorage.setItem(NY_BOOKS_LIST_KEY, JSON.stringify(booksList));
 }
 
 /**
@@ -117,7 +117,17 @@ const createCardElement = (data, isDetails = false) => {
         booksDivElement.appendChild(newCardElement)
     }
 
+    if (isDetails) {
+        //crear el boton para favoritos
+        const favorites = document.createElement('div');
+        favorites.className = 'fav';
+        favorites.addEventListener('click', async () => {
+            await addFavorite(data)
+        })
+
+    }
 }
+
 
 /**
  * @param {string} listName
@@ -140,7 +150,6 @@ async function startApp() {
     let booksList = getNyList();
 
     if (!booksList || booksList.length <= 0) {
-        console.log("ESTOY LLAMANDO A LA API")
         const res = await fetch('https://api.nytimes.com/svc/books/v3/lists/names.json?api-key=MykMkubQ8h19XVHSwhUYebTYlwI4YGyH');
         const data = await res.json()
         booksList = data.results

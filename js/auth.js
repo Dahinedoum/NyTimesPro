@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js';
-import { auth } from '/nyTimesProject/js/firebase.js'
+import { auth } from './firebase.js'
 
 const formElement = document.querySelector("#form");
 const errorMessage = document.getElementById("error-message")
@@ -39,7 +39,7 @@ async function registerAuth(email, password) {
     try {
         const credentials = await createUserWithEmailAndPassword(auth, email, password);
         console.log(credentials);
-        window.location.replace("/nyTimesProject/views/books.html");
+        window.location.replace("/views/books.html");
 
 
     } catch (error) {
@@ -52,15 +52,15 @@ async function logIn(email, password) {
     try {
         const credentials = await signInWithEmailAndPassword(auth, email, password);
         console.log(credentials);
-        window.location.replace("/nyTimesProject/views/books.html");
+        window.location.replace("/views/books.html");
     } catch (error) {
         errorMessage.innerHTML = `<p class="error">${error.message}</p>`;
     }
 
 }
 
-const loggedUrls = ['/nyTimesProject/views/books.html']
-const publicUrls = ['/nyTimesProject/index.html', '/nyTimesProject/views/login.html', '/nyTimesProject/views/signup.html']
+const loggedUrls = ['/views/books.html']
+const publicUrls = ['/index.html', '/views/login.html', '/views/signup.html']
 
 onAuthStateChanged(auth, (user) => {
     const currentPath = window.location.pathname;
@@ -68,11 +68,11 @@ onAuthStateChanged(auth, (user) => {
 
     if (user) {
         if (publicUrls.includes(currentPath)) {
-            window.location.replace("/nyTimesProject/views/books.html");
+            window.location.replace("/views/books.html");
         }
     } else {
         if (loggedUrls.includes(currentPath)) {
-           window.location.replace("/nyTimesProject/views/login.html");
+            window.location.replace("/views/login.html");
         }
     }
 })
