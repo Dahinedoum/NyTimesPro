@@ -40,6 +40,7 @@ const mapBookToCard = (data) => ({
 */
 const NY_BOOKS_LIST_KEY = 'nyBooksLists'
 const MY_API_KEY = 'MykMkubQ8h19XVHSwhUYebTYlwI4YGyH';
+const FAV_BOOKS = 'favBooks';
 
 
 const getNyList = () => {
@@ -50,6 +51,20 @@ const getNyList = () => {
 const setNyList = (booksList) => {
     window.localStorage.setItem(NY_BOOKS_LIST_KEY, JSON.stringify(booksList));
 }
+
+
+//----------------------------------------------------------------
+
+const getFavBooks = () => {
+    const key = `user-favs-${window.localStorage.getItem('user')}`
+    const response = window.localStorage.getItem(key);
+    return response ? JSON.parse(response) : [];
+};
+
+const setFavBooks = (favBooksList) => {
+    const key = `user-favs-${window.localStorage.getItem('user')}`
+    window.localStorage.setItem(key, JSON.stringify(favBooksList));
+};
 
 /**
  * DOM
@@ -62,12 +77,29 @@ const booksDivElement = document.querySelector('.books')
 /**
  * @param {string} text
  */
+
 const createInfoElement = (text) => {
     const newInfoElement = document.createElement('p')
     newInfoElement.setAttribute('class', 'info')
     newInfoElement.innerText = text
-
     return newInfoElement
+}
+
+/**
+ * @param {string} title 
+ */
+
+function addFavToFirestore(title) {
+    const currentFavBooks = getFavBooks()
+    const exists = currentFavBooks.find(item => item === title);
+
+    if (!exists) {
+        setFavBooks([...currentFavBooks, title])
+    } else {
+        setFavBooks(currentFavBooks.filter((item) => item !== title))
+    }
+
+    window.location.reload()
 }
 
 /**
@@ -86,7 +118,29 @@ const createCardElement = (data, isDetails = false) => {
 
     const newTitleElement = document.createElement('p')
     newTitleElement.setAttribute('class', 'title')
-    newTitleElement.innerText = data.title
+    newTitleElement.innerText = data.title;
+
+    //Favoritos 
+
+    if (isDetails) {
+        const currentFavBooks = getFavBooks();
+        const isFavorite = currentFavBooks.find(title => title === data.title)
+
+        const favorites = document.createElement('div');
+        favorites.classList.add(isFavorite ? "heart-icon-selected" : 'heart-icon');
+        newCardContentElement.appendChild(favorites);
+
+        favorites.addEventListener('click', () => {
+            addFavToFirestore(data.title);
+        });
+
+    }
+
+
+    const newButtonElement = document.createElement('button');
+    newButtonElement.innerText = 'Details';
+    newButtonElement.setAttribute('class', 'btn');
+
 
     const newCardContentElement = document.createElement('div')
     newCardContentElement.setAttribute('class', 'cardContent')
@@ -97,15 +151,13 @@ const createCardElement = (data, isDetails = false) => {
 
     newCardContentElement.append(newestPublishedDate, oldestPublishedDate, updated)
 
-    const newButtonElement = document.createElement('button');
-    newButtonElement.innerText = 'Books';
-    newButtonElement.setAttribute('class', 'btn');
+    if (!isDetails) {
+        newButtonElement.onclick = async () => {
+            await getListDetails(data.list_name_encoded)
+        }
 
-    newButtonElement.onclick = async () => {
-        await getListDetails(data.list_name_encoded)
+        newCardContentElement.appendChild(newButtonElement)
     }
-
-    newCardContentElement.appendChild(newButtonElement)
 
 
     newCardElement.append(newTitleElement, newCardContentElement)
@@ -113,19 +165,12 @@ const createCardElement = (data, isDetails = false) => {
 
     if (!isDetails) {
         containerDivElement.appendChild(newCardElement)
+
     } else {
         booksDivElement.appendChild(newCardElement)
     }
 
-    if (isDetails) {
-        //crear el boton para favoritos
-        const favorites = document.createElement('div');
-        favorites.className = 'fav';
-        favorites.addEventListener('click', async () => {
-            await addFavorite(data)
-        })
 
-    }
 }
 
 
